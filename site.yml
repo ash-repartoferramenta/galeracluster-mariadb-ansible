@@ -1,0 +1,8 @@
+---
+- name: MariaDB Galera cluster deploy 
+  hosts: cluster
+  roles:
+    - role: mariadb
+      become: yes
+    - role: galeracluster
+      become: yes

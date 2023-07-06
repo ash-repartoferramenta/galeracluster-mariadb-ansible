@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+[server]
+port={{ mysql_port }}
+bind-address= 0.0.0.0
+#{{ansible_all_ipv4_addresses | intersect(clusterips)| join (',')}}
+

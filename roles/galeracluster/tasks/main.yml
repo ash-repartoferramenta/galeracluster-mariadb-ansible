@@ -1,0 +1,57 @@
+---
+  - name: Install galera cluster
+    ansible.builtin.yum:
+      name: mariadb-server-galera
+      state: present 
+
+  - name: Enable cluster communication through firewall
+    ansible.posix.firewalld:
+      state: enabled
+      service: galera
+      immediate: true
+      permanent: true
+
+    
+  - name: Templating first node
+    ansible.builtin.template:
+      src: ../templates/firstnode.cnf.j2
+      dest: /etc/my.cnf.d/galera.cnf
+      owner: root
+      group: root
+      mode: 0644
+    when: clusterips.0 in ansible_all_ipv4_addresses 
+
+  - name: Bootstrapping cluster on firstnode
+    ansible.builtin.command: 
+     cmd: galera_new_cluster 
+    when: clusterips.0 in ansible_all_ipv4_addresses 
+    notify: 
+      - Restart mariadb
+  
+  - name: Reloading config on firstnode
+    meta: flush_handlers
+
+  - name: Defining cluster adresses on firstnode
+    ansible.builtin.template:
+      src: ../templates/galera.cnf.j2
+      dest: /etc/my.cnf.d/galera.cnf
+      owner: root
+      group: root
+      mode: 0644
+    when: clusterips.0 in ansible_all_ipv4_addresses 
+  
+  - name: Cleaning handlers 
+    meta: flush_handlers
+
+        
+  - name: Joining other nodes 
+    ansible.builtin.template:
+      src: ../templates/galera.cnf.j2
+      dest: /etc/my.cnf.d/galera.cnf
+      owner: root
+      group: root
+      mode: 0644
+    when: clusterips.0 not in ansible_all_ipv4_addresses 
+    notify:
+       - Restart mariadb
+    

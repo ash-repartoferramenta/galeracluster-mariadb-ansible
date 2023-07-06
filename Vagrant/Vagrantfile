@@ -1,0 +1,41 @@
+#Vagrant API
+VAGRANTFILE_API_VERSION = '2'
+IPSTART = 10
+NODESNUMBER = 5
+VCLUSTERIPS = Array.new
+i = 1
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+   # General config
+   config.vm.box = "generic/centos9s"
+   config.ssh.insert_key = false
+   config.vm.provider :virtualbox do |v|
+     v.memory = 1560
+     v.linked_clone = true
+   end
+
+
+  (i..NODESNUMBER).each do |machine_id|
+      config.vm.define "dbnode#{machine_id}" do |machine|
+        machine.vm.hostname = "dbnode#{machine_id}"
+        machine.vm.network "private_network", ip: "192.168.60.#{IPSTART+machine_id}"
+        VCLUSTERIPS.append("192.168.60.#{IPSTART+machine_id}") 
+
+   if machine_id == NODESNUMBER
+      machine.vm.provision :ansible do |ansible|
+      # Disable default limit to connect to all the machines
+      ansible.limit = "all"
+      ansible.playbook = "../site.yml"
+      ansible.extra_vars = {
+        clusterips: VCLUSTERIPS
+       }
+      ansible.groups = {
+        "cluster" => ["dbnode[1:#{NODESNUMBER}]"]
+      }
+       end
+      end
+    end
+  end
+end
+
+
+
