@@ -30,7 +30,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       ansible.playbook = "../site.yml"
       ansible.extra_vars = {
         clusterips: VCLUSTERIPS,
-        webip: VWEBIP
        }
       ansible.groups = {
         "cluster" => ["dbnode[1:#{NODESNUMBER}]"]
