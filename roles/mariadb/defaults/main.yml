@@ -1,3 +1,2 @@
 ---
-dbname: wp-database
 mysql_port: "3306"
