@@ -5,4 +5,5 @@ mariadbroot: my-root-password
 masteruser: my-db-user
 #db password to access the new db
 masterpassword: my-db-password
-
+#subnet that can access databases
+webip: 192.168.60.#
