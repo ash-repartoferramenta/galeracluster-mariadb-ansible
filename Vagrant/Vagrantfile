@@ -5,7 +5,7 @@ VNETWORK = "192.168.60."
 NODESNUMBER = 2
 VCLUSTERIPS = Array.new
 i = 1
-VWEBIP = "192.168.60.#"
+
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
    # General config
    config.vm.box = "generic/centos9s"

@@ -1,9 +1,3 @@
 ---
 #root user for mariadb
 mariadbroot: my-root-password
-#db user for mariadb
-masteruser: my-db-user
-#db password to access the new db
-masterpassword: my-db-password
-#subnet that can access databases
-webip: 192.168.60.#
