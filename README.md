@@ -44,4 +44,37 @@ For the sake of ease of use, this Vagrantfile is set to utilize the default inse
 > if NODESNUMBER is 3, VNETWORK is 192.168.1 and IPSTART is 5, 3 VMs will be created with the following addresses assigned:
 > 192.168.1.6 , 192.168.1.7 , 192.168.1.8
 
+**Current architectural concerns:**
+Ips assignment  previously described is only based on string interpolation between the reported variables,
+no further check is done so please review them carefully.
 
+
+## Ansible
+
+In the ansible folder, two different roles are described:
+- mariadb
+- galeracluster
+
+### mariadb
+
+This role installs mariadb server, initalize root user and bind the service to the address previously assigned to the VMs
+
+**Variables:** This variable **MUST** be customized from ./mariadb/vars/
+
+- mariadbroot: mariadb root password for all nodes
+- mysql_port: mariadb server port, already specified as 3306 in ./mariadb/defaults
+
+**Current architectural concerns:**
+The task that set root user currently doesn't provides idempotency
+
+### galeracluster
+
+This role  install galera cluster, allow connection trough firewalld and initialize the first node;
+The first node is always the one with the first address assigned. Next the role joins the other nodes to the cluster.
+
+**Variables:**
+- clusterips: a list containing ips of every node of the cluster, by default is provided by vagrantfile
+- cluster_name: name of the cluster, specified in ./galeracluster/defaults/
+
+**Security concerns:**
+the role enable access on all interfaces to galeradb related ports (3306,4567,4568,4444)
